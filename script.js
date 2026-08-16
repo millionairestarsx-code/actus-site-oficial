@@ -1,6 +1,6 @@
 // Substitua pelo número oficial da ACTUS no formato: 55 + DDD + número, somente dígitos.
 // Exemplo: 5585999999999
-const ACTUS_WHATSAPP = "5585999999999";
+const ACTUS_WHATSAPP = "5585988060001";
 const PLACEHOLDER = "5585999999999";
 
 const message = "Olá ACTUS, quero conhecer uma solução de autoatendimento para minha empresa.";

@@ -3,6 +3,7 @@ import { ButtonLink } from "@/components/button-link";
 import { Container } from "@/components/container";
 import { Reveal } from "@/components/reveal";
 import actusPro from "@/public/totens/actus pro.png";
+import { WHATSAPP_LINKS } from "@/lib/whatsapp";
 
 export function Hero() {
   return (
@@ -39,7 +40,7 @@ export function Hero() {
           <Reveal delay={240}>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <ButtonLink href="#solucoes">Conheça nossas soluções</ButtonLink>
-              <ButtonLink href="#contato" variant="secondary">
+              <ButtonLink href={WHATSAPP_LINKS.especialista} variant="secondary" external>
                 Fale com um especialista
               </ButtonLink>
             </div>

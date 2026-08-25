@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SiteMark } from "@/components/site-mark";
 import { navItems } from "@/lib/navigation";
+import { WHATSAPP_LINKS } from "@/lib/whatsapp";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -67,12 +68,14 @@ export function Header() {
         </nav>
 
         <div className="hidden lg:block">
-          <Link
-            href="#contato"
+          <a
+            href={WHATSAPP_LINKS.faleComActus}
             className="btn-motion btn-motion-primary inline-flex min-h-11 items-center rounded-sm bg-accent px-4 text-sm font-semibold text-graphite hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Fale com a ACTUS
-          </Link>
+          </a>
         </div>
 
         <button
@@ -111,13 +114,15 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          <Link
-            href="#contato"
+          <a
+            href={WHATSAPP_LINKS.faleComActus}
             className="btn-motion btn-motion-primary mt-3 inline-flex min-h-12 items-center justify-center rounded-sm bg-accent px-4 text-sm font-semibold text-graphite hover:bg-accent-hover"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={() => setOpen(false)}
           >
             Fale com a ACTUS
-          </Link>
+          </a>
         </nav>
       </div>
     </header>

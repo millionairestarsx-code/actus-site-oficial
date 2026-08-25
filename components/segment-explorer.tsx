@@ -3,7 +3,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Reveal } from "@/components/reveal";
-import { segments, type Segment } from "@/lib/segments";
+import { type Segment, segments } from "@/lib/segments";
+
 
 const buttonClass =
   "btn-motion btn-motion-primary inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-accent px-6 text-sm font-semibold tracking-wide text-graphite hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:w-auto";

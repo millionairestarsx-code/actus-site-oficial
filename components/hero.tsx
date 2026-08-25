@@ -31,10 +31,9 @@ export function Hero() {
           </Reveal>
           <Reveal delay={160}>
             <p className="mt-7 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-              A ACTUS é especializada em soluções de automação comercial e
-              autoatendimento. Projetamos e desenvolvemos totens sob medida para
-              empresas que precisam de operação mais ágil, atendimento mais
-              fluido e tecnologia aplicada ao ponto de venda.
+              A ACTUS cria soluções completas de automação comercial, combinando
+              software próprio, totens personalizados e integração tecnológica
+              para tornar operações mais ágeis, eficientes e inteligentes.
             </p>
           </Reveal>
           <Reveal delay={240}>

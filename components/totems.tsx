@@ -13,36 +13,41 @@ const totems = [
     id: "01",
     name: "ACTUS ONE",
     image: actusOne,
+    subtitle: "Compacto. Integrado. Direto na parede.",
     description:
-      "Totem desenvolvido para instalação diretamente na parede, sem pedestal ou base de piso. Ocupa o mínimo de espaço e se integra à arquitetura do ambiente.",
+      "Totem desenvolvido para instalação direta na parede, sem pedestal ou base de piso. Uma solução que otimiza espaço e integra o autoatendimento à arquitetura do ambiente.",
   },
   {
     id: "02",
     name: "ACTUS PRO",
     image: actusPro,
+    subtitle: "Versatilidade para diferentes operações.",
     description:
-      "Totem com pedestal e base de sustentação, indicado para operações profissionais de autoatendimento. Presença sólida e instalação independente.",
+      "Modelo com pedestal e base de sustentação, desenvolvido para oferecer presença, estabilidade e flexibilidade de posicionamento no ponto de atendimento.",
   },
   {
     id: "03",
     name: "ACTUS PREMIUM",
     image: actusPremium,
+    subtitle: "Presença e acabamento para projetos de alto padrão.",
     description:
-      "Totem em formato de gabinete completo, do chão até a tela, com acabamento premium. Volume, presença e sofisticação para operações que exigem destaque.",
+      "Totem de gabinete completo, desenvolvido para operações que valorizam presença visual, robustez e integração sofisticada entre tecnologia e ambiente.",
   },
   {
     id: "04",
     name: "ACTUS FLEX",
     image: actusFlex,
+    subtitle: "Autoatendimento onde você precisar.",
     description:
-      "Totem compacto e portátil desenvolvido para instalação sobre mesa ou balcão. Ideal para espaços reduzidos e operações que precisam de mobilidade.",
+      "Modelo compacto para instalação sobre mesas e balcões, indicado para operações que precisam aproveitar espaços menores sem abrir mão da experiência digital.",
   },
   {
     id: "05",
     name: "ACTUS ONIC",
     image: actusOnic,
+    subtitle: "Design vertical. Máximo aproveitamento de espaço.",
     description:
-      "Totem vertical estreito, com design moderno e otimização de espaço. Indicado para corredores, halls e pontos de alto fluxo.",
+      "Modelo vertical estreito, desenvolvido para operações que precisam de presença tecnológica com menor ocupação de área.",
   },
 ];
 
@@ -54,8 +59,12 @@ export function Totems() {
           <SectionHeading
             eyebrow="Linha de totens"
             title="Cinco formatos. Uma mesma exigência de fabricação."
-            description="Toda a linha ACTUS é desenvolvida sob medida, com materiais, acabamentos e configurações definidos de acordo com as necessidades de cada projeto. Cada modelo responde a um tipo de espaço, de fluxo e de presença no ponto de atendimento."
+            description="De soluções compactas a estruturas completas de autoatendimento, a linha ACTUS oferece diferentes formatos para atender ao espaço disponível, ao fluxo de clientes e às necessidades de cada operação."
           />
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
+            Materiais e acabamentos são definidos conforme cada projeto, podendo
+            incluir ACM, aço, aço escovado, MDF e outras soluções construtivas.
+          </p>
         </Reveal>
 
         <div className="mt-16 space-y-8">
@@ -89,7 +98,10 @@ export function Totems() {
                   <h3 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
                     {totem.name}
                   </h3>
-                  <p className="mt-5 max-w-md text-base leading-relaxed text-muted">
+                  <p className="mt-3 max-w-md text-sm font-medium tracking-wide text-foreground/80">
+                    {totem.subtitle}
+                  </p>
+                  <p className="mt-4 max-w-md text-base leading-relaxed text-muted">
                     {totem.description}
                   </p>
                 </div>

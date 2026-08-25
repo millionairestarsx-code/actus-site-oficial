@@ -6,7 +6,7 @@ const solutions = [
   {
     title: "Autoatendimento",
     description:
-      "Totens que devolvem autonomia ao cliente e liberam a equipe para o que realmente importa na operação.",
+      "Dê autonomia ao cliente para consultar, escolher, pedir e pagar com uma experiência simples e intuitiva.",
     icon: (
       <path
         d="M8 5h8v10H8zM10 17h4M12 17v2"
@@ -19,7 +19,7 @@ const solutions = [
   {
     title: "Agilidade operacional",
     description:
-      "Fluxos mais rápidos, menos fricção e mais capacidade no mesmo espaço, com padronização no atendimento.",
+      "Distribua melhor a demanda e permita que sua equipe concentre esforços nas atividades que realmente exigem atenção humana.",
     icon: (
       <path
         d="M4 12h16M14 6l6 6-6 6"
@@ -32,7 +32,7 @@ const solutions = [
   {
     title: "Redução de filas",
     description:
-      "Atendimento paralelo que encurta a espera, organiza o fluxo e aumenta a conversão no ponto de venda.",
+      "Crie novos pontos de atendimento e diminua a concentração de clientes no balcão.",
     icon: (
       <path
         d="M6 7h12M6 12h8M6 17h5"
@@ -45,7 +45,7 @@ const solutions = [
   {
     title: "Integração tecnológica",
     description:
-      "Soluções pensadas para conversar com o ecossistema do seu negócio, do software à operação física.",
+      "Estrutura preparada para integrar periféricos, sistemas de pagamento e soluções utilizadas na operação.",
     icon: (
       <path
         d="M8 8h8v8H8zM4 10v4M20 10v4"
@@ -58,7 +58,7 @@ const solutions = [
   {
     title: "Experiência do cliente",
     description:
-      "Jornada simples, interface clara e presença moderna que reforçam a percepção de qualidade da marca.",
+      "Uma jornada moderna, intuitiva e consistente do primeiro toque à conclusão do atendimento.",
     icon: (
       <path
         d="M12 6l1.8 3.8L18 11l-3.2 2.6L15.6 18 12 15.8 8.4 18l.8-4.4L6 11l4.2-1.2z"
@@ -71,7 +71,7 @@ const solutions = [
   {
     title: "Soluções personalizadas",
     description:
-      "Projetos sob medida: do formato do totem aos materiais e acabamentos, alinhados à identidade e à operação.",
+      "Configurações, identidade visual, materiais, acabamentos e componentes definidos de acordo com as necessidades de cada projeto.",
     icon: (
       <path
         d="M7 17V7h10v10zM10 10h4"
@@ -90,8 +90,8 @@ export function Solutions() {
         <Reveal>
           <SectionHeading
             eyebrow="Soluções"
-            title="Tecnologia aplicada ao ponto de atendimento."
-            description="A ACTUS desenvolve automação comercial para reduzir filas, ganhar velocidade e elevar a experiência de quem compra e de quem opera."
+            title="Mais autonomia para o cliente. Mais eficiência para a operação."
+            description="Da realização do pedido ao pagamento, a ACTUS cria soluções que simplificam jornadas, distribuem melhor a demanda e ajudam empresas a atender mais, com organização e controle."
           />
         </Reveal>
         <ul className="mt-14 grid gap-px bg-line sm:grid-cols-2 xl:grid-cols-3">

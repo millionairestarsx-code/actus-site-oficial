@@ -1,7 +1,6 @@
-import { ButtonLink } from "@/components/button-link";
 import { Container } from "@/components/container";
+import { ProposalTrigger } from "@/components/proposal-form";
 import { Reveal } from "@/components/reveal";
-import { WHATSAPP_LINKS } from "@/lib/whatsapp";
 
 export function Cta() {
   return (
@@ -29,9 +28,7 @@ export function Cta() {
             para empresas que querem transformar a operação.
           </p>
           <div className="mt-10">
-            <ButtonLink href={WHATSAPP_LINKS.proposta} external>
-              Solicite uma proposta
-            </ButtonLink>
+            <ProposalTrigger />
           </div>
         </div>
         </Reveal>

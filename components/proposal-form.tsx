@@ -79,11 +79,26 @@ export function ProposalTrigger() {
     setSubmitting(true);
     setStatus("Registrando os dados da solicitação...");
 
-    const record = await captureLead(result.lead);
-    setLead(result.lead);
-    setStatus("Dados registrados. Abrindo o WhatsApp da ACTUS com o resumo da solicitação.");
-    window.open(buildProposalWhatsAppUrl(record), "_blank", "noopener,noreferrer");
-    setSubmitting(false);
+    try {
+      const record = await captureLead(result.lead);
+      setLead(result.lead);
+      setStatus(
+        "Dados registrados. Abrindo o WhatsApp da ACTUS com o resumo da solicitação.",
+      );
+      window.open(
+        buildProposalWhatsAppUrl(record),
+        "_blank",
+        "noopener,noreferrer",
+      );
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível gravar a solicitação. Tente novamente.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const modal =

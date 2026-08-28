@@ -147,6 +147,38 @@ export function buildProposalWhatsAppUrl(lead: ProposalLead) {
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
+function splitCityState(cityState: string) {
+  const trimmed = cityState.trim();
+  const match = trimmed.match(/^(.*?)\s*[\/,|–-]\s*([A-Za-zÀ-ÿ]{2})$/u);
+
+  if (match) {
+    return {
+      cidade: match[1].trim(),
+      estado: match[2].toUpperCase(),
+    };
+  }
+
+  return {
+    cidade: trimmed,
+    estado: "",
+  };
+}
+
+export function mapLeadToDatabaseRow(lead: ProposalLead): Record<string, unknown> {
+  const { cidade, estado } = splitCityState(lead.cityState);
+
+  return {
+    nome: lead.name,
+    empresa: lead.company,
+    whatsapp: lead.whatsapp,
+    email: lead.email,
+    cidade,
+    estado,
+    segmento: lead.segmentName,
+    necessidade: lead.description,
+  };
+}
+
 export function persistLeadLocally(lead: CapturedLead) {
   if (typeof window === "undefined") {
     return;
@@ -159,7 +191,14 @@ export function persistLeadLocally(lead: CapturedLead) {
     records.push(lead);
     window.localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(records));
   } catch {
-    // Local persistence is a fallback for the future CRM integration.
+    // Local copy is optional and must never hide a failed Supabase write.
+  }
+}
+
+export class LeadCaptureError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "LeadCaptureError";
   }
 }
 
@@ -170,17 +209,39 @@ export async function captureLead(lead: ProposalLead): Promise<CapturedLead> {
     capturedAt: new Date().toISOString(),
   };
 
-  persistLeadLocally(record);
+  let response: Response;
 
   try {
-    await fetch("/api/leads", {
+    response = await fetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(record),
     });
   } catch {
-    // Local structured capture remains available if the API is unreachable.
+    throw new LeadCaptureError(
+      "Não foi possível conectar ao servidor para gravar a solicitação. Tente novamente.",
+    );
   }
 
+  let payload: { ok?: boolean; error?: string; errors?: LeadErrors } | null = null;
+
+  try {
+    payload = (await response.json()) as {
+      ok?: boolean;
+      error?: string;
+      errors?: LeadErrors;
+    };
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok || payload?.ok !== true) {
+    throw new LeadCaptureError(
+      payload?.error ||
+        "Não foi possível gravar a solicitação. Tente novamente.",
+    );
+  }
+
+  persistLeadLocally(record);
   return record;
 }

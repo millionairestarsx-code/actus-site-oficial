@@ -5,10 +5,24 @@ import { SiteMark } from "@/components/site-mark";
 import { navItems } from "@/lib/navigation";
 
 const contactSlots = [
-  { label: "Telefone", value: "Em breve" },
-  { label: "WhatsApp", value: "Em breve" },
-  { label: "E-mail", value: "Em breve" },
-  { label: "Redes sociais", value: "Em breve" },
+  { label: "Telefone", value: "(85) 98806-0001", href: "tel:+5585988060001" },
+  {
+    label: "WhatsApp",
+    value: "(85) 98806-0001",
+    href: "https://wa.me/5585988060001",
+    external: true,
+  },
+  {
+    label: "E-mail",
+    value: "contato@actus85.com.br",
+    href: "mailto:contato@actus85.com.br",
+  },
+  {
+    label: "Instagram",
+    value: "@actusautomacaocomercial",
+    href: "https://www.instagram.com/actusautomacaocomercial",
+    external: true,
+  },
 ];
 
 export function Footer() {
@@ -49,7 +63,15 @@ export function Footer() {
             {contactSlots.map((slot) => (
               <li key={slot.label}>
                 <p className="text-sm text-foreground">{slot.label}</p>
-                <p className="text-sm text-muted">{slot.value}</p>
+                <a
+                  href={slot.href}
+                  className="text-sm text-muted"
+                  {...(slot.external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                >
+                  {slot.value}
+                </a>
               </li>
             ))}
           </ul>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import { segments } from "@/lib/segments";
+import { WHATSAPP_NUMBER } from "@/lib/whatsapp";
 import {
   PROPOSAL_OBJECTIVES,
-  buildProposalWhatsAppUrl,
   captureLead,
   createEmptyLead,
   validateLead,
@@ -19,14 +19,21 @@ const triggerClass =
 const fieldClass =
   "w-full rounded-sm border border-line bg-background px-4 py-3 text-sm text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
+const specialistWhatsAppUrl = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, "")}?text=${encodeURIComponent(
+  "Olá! Acabei de enviar uma solicitação de proposta pelo site da ACTUS e gostaria de falar com um especialista.",
+)}`;
+
 export function ProposalTrigger() {
   const [open, setOpen] = useState(false);
   const [lead, setLead] = useState<ProposalLead>(createEmptyLead);
   const [errors, setErrors] = useState<LeadErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [status, setStatus] = useState("");
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const overlayCloseArmedRef = useRef(false);
+  const openClickStampRef = useRef(0);
   const titleId = useId();
   const descriptionId = useId();
 
@@ -37,17 +44,24 @@ export function ProposalTrigger() {
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    overlayCloseArmedRef.current = false;
     closeRef.current?.focus();
+
+    const armOverlayClose = window.setTimeout(() => {
+      overlayCloseArmedRef.current = true;
+    }, 0);
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setOpen(false);
+        closeModal();
       }
     }
 
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
+      window.clearTimeout(armOverlayClose);
+      overlayCloseArmedRef.current = false;
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
       triggerRef.current?.focus();
@@ -58,6 +72,33 @@ export function ProposalTrigger() {
     setLead((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
     setStatus("");
+  }
+
+  function closeModal() {
+    overlayCloseArmedRef.current = false;
+    setOpen(false);
+    setSubmitted(false);
+    setSubmitting(false);
+    setStatus("");
+  }
+
+  function handleOverlayClick(event: MouseEvent<HTMLButtonElement>) {
+    if (!overlayCloseArmedRef.current) {
+      return;
+    }
+
+    if (event.nativeEvent.timeStamp === openClickStampRef.current) {
+      return;
+    }
+
+    closeModal();
+  }
+
+  function openModal(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    openClickStampRef.current = event.nativeEvent.timeStamp;
+    overlayCloseArmedRef.current = false;
+    setOpen(true);
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -77,20 +118,16 @@ export function ProposalTrigger() {
     }
 
     setSubmitting(true);
-    setStatus("Registrando os dados da solicitação...");
+    setSubmitted(false);
+    setStatus("Registrando sua solicitação...");
 
     try {
-      const record = await captureLead(result.lead);
+      await captureLead(result.lead);
       setLead(result.lead);
-      setStatus(
-        "Dados registrados. Abrindo o WhatsApp da ACTUS com o resumo da solicitação.",
-      );
-      window.open(
-        buildProposalWhatsAppUrl(record),
-        "_blank",
-        "noopener,noreferrer",
-      );
+      setSubmitted(true);
+      setStatus("");
     } catch (error) {
+      setSubmitted(false);
       setStatus(
         error instanceof Error
           ? error.message
@@ -109,7 +146,7 @@ export function ProposalTrigger() {
           type="button"
           className="absolute inset-0 bg-background/80"
           aria-label="Fechar"
-          onClick={() => setOpen(false)}
+          onClick={handleOverlayClick}
         />
         <div
           role="dialog"
@@ -124,7 +161,7 @@ export function ProposalTrigger() {
             type="button"
             className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-sm border border-line text-foreground hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
             aria-label="Fechar"
-            onClick={() => setOpen(false)}
+            onClick={closeModal}
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
               <path
@@ -142,18 +179,31 @@ export function ProposalTrigger() {
           </p>
           <h3
             id={titleId}
-            className="max-w-xl font-display text-3xl font-semibold tracking-tight text-balance"
+            className={`max-w-xl font-display text-3xl font-semibold tracking-tight text-balance ${submitted ? "text-accent" : ""}`}
           >
-            Solicite uma proposta
+            {submitted ? "Solicitação registrada com sucesso!" : "Solicite uma proposta"}
           </h3>
           <p
             id={descriptionId}
             className="mt-4 max-w-2xl text-base leading-relaxed text-muted"
           >
-            Preencha os dados da sua operação. A ACTUS registra a solicitação e
-            em seguida abre o WhatsApp com um resumo para o time comercial.
+            {submitted
+              ? "Se desejar falar agora com um especialista da ACTUS, continue pelo WhatsApp."
+              : "Preencha os dados da sua operação. A ACTUS registra a solicitação para o time comercial."}
           </p>
 
+          {submitted ? (
+            <div className="mt-8">
+              <a
+                href={specialistWhatsAppUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={triggerClass}
+              >
+                Falar com um especialista no WhatsApp
+              </a>
+            </div>
+          ) : (
           <form className="mt-8 grid gap-5 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
             <Field
               label="Nome"
@@ -257,13 +307,23 @@ export function ProposalTrigger() {
 
             <div className="sm:col-span-2">
               <button type="submit" className={triggerClass} disabled={submitting}>
-                {submitting ? "Registrando..." : "Enviar solicitação"}
+                {submitting ? "Registrando sua solicitação..." : "Enviar solicitação"}
               </button>
-              {status ? (
-                <p className="mt-4 text-sm leading-relaxed text-muted">{status}</p>
+              {submitting ? (
+                <p
+                  role="status"
+                  aria-live="polite"
+                  className="mt-6 rounded-sm border border-accent bg-accent/15 px-5 py-4 font-display text-xl font-semibold tracking-tight text-accent sm:text-2xl"
+                >
+                  Registrando sua solicitação...
+                </p>
+              ) : null}
+              {status && !submitting ? (
+                <p className="mt-4 text-sm leading-relaxed text-accent">{status}</p>
               ) : null}
             </div>
           </form>
+          )}
         </div>
       </div>,
       document.body,
@@ -275,7 +335,7 @@ export function ProposalTrigger() {
         ref={triggerRef}
         type="button"
         className={triggerClass}
-        onClick={() => setOpen(true)}
+        onClick={openModal}
       >
         Solicite uma proposta
       </button>

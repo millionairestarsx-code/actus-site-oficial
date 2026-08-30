@@ -11,6 +11,15 @@ export const PROPOSAL_OBJECTIVES = [
   "Outro",
 ] as const;
 
+export const PROPOSAL_MODELS = [
+  "ACTUS ONE",
+  "ACTUS PRO",
+  "ACTUS PREMIUM",
+  "ACTUS FLEX",
+  "ACTUS ONIC",
+  "Ainda não sei / A definir",
+] as const;
+
 export type ProposalLead = {
   name: string;
   company: string;
@@ -21,6 +30,7 @@ export type ProposalLead = {
   segmentName: string;
   estimatedTotems: string;
   objective: string;
+  modelInterest: string;
   description: string;
 };
 
@@ -49,6 +59,7 @@ export function createEmptyLead(): ProposalLead {
     segmentName: "",
     estimatedTotems: "",
     objective: "",
+    modelInterest: "",
     description: "",
   };
 }
@@ -67,8 +78,10 @@ export function validateLead(input: Partial<ProposalLead>): {
   const segmentId = trimValue(input.segmentId);
   const estimatedTotems = trimValue(input.estimatedTotems);
   const objective = trimValue(input.objective);
+  const modelInterest = trimValue(input.modelInterest);
   const description = trimValue(input.description);
   const segment = segments.find((item) => item.id === segmentId);
+  const selectedModel = PROPOSAL_MODELS.find((model) => model === modelInterest);
 
   if (name.length < 2) {
     errors.name = "Informe o nome completo.";
@@ -102,6 +115,10 @@ export function validateLead(input: Partial<ProposalLead>): {
     errors.objective = "Informe o objetivo principal.";
   }
 
+  if (!selectedModel) {
+    errors.modelInterest = "Selecione o modelo de interesse.";
+  }
+
   if (description.length < 8) {
     errors.description = "Descreva a necessidade com um pouco mais de detalhe.";
   }
@@ -123,6 +140,7 @@ export function validateLead(input: Partial<ProposalLead>): {
       segmentName: segment?.name ?? "",
       estimatedTotems,
       objective,
+      modelInterest,
       description,
     },
   };
@@ -149,13 +167,44 @@ export function buildProposalWhatsAppUrl(lead: ProposalLead) {
 
 function splitCityState(cityState: string) {
   const trimmed = cityState.trim();
-  const match = trimmed.match(/^(.*?)\s*[\/,|–-]\s*([A-Za-zÀ-ÿ]{2})$/u);
+  const brazilianStates = new Set([
+    "AC",
+    "AL",
+    "AP",
+    "AM",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MT",
+    "MS",
+    "MG",
+    "PA",
+    "PB",
+    "PR",
+    "PE",
+    "PI",
+    "RJ",
+    "RN",
+    "RS",
+    "RO",
+    "RR",
+    "SC",
+    "SP",
+    "SE",
+    "TO",
+  ]);
+  const match = trimmed.match(/^(.*?)\s*(?:[\/,|–-]\s*|\s+)([A-Za-z]{2})$/u);
 
   if (match) {
-    return {
-      cidade: match[1].trim(),
-      estado: match[2].toUpperCase(),
-    };
+    const cidade = match[1].trim();
+    const estado = match[2].toUpperCase();
+
+    if (cidade && brazilianStates.has(estado)) {
+      return { cidade, estado };
+    }
   }
 
   return {
@@ -175,6 +224,9 @@ export function mapLeadToDatabaseRow(lead: ProposalLead): Record<string, unknown
     cidade,
     estado,
     segmento: lead.segmentName,
+    quantidade_totens: lead.estimatedTotems,
+    objetivo_principal: lead.objective,
+    modelo_interesse: lead.modelInterest,
     necessidade: lead.description,
   };
 }

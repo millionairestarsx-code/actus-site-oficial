@@ -5,11 +5,13 @@ import { createPortal } from "react-dom";
 import { segments } from "@/lib/segments";
 import { WHATSAPP_NUMBER } from "@/lib/whatsapp";
 import {
+  PROPOSAL_MODELS,
   PROPOSAL_OBJECTIVES,
   captureLead,
   createEmptyLead,
   validateLead,
   type LeadErrors,
+  type LeadField,
   type ProposalLead,
 } from "@/lib/leads";
 
@@ -18,6 +20,55 @@ const triggerClass =
 
 const fieldClass =
   "w-full rounded-sm border border-line bg-background px-4 py-3 text-sm text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+
+const fieldErrorClass =
+  "border-[#dc2626] focus-visible:outline-[#dc2626]";
+
+const fieldMessageClass = "mt-2 block text-xs text-[#dc2626]";
+
+const FIELD_ORDER: LeadField[] = [
+  "name",
+  "company",
+  "whatsapp",
+  "email",
+  "cityState",
+  "segmentId",
+  "estimatedTotems",
+  "objective",
+  "modelInterest",
+  "description",
+];
+
+function fieldId(field: LeadField) {
+  return `proposal-field-${field}`;
+}
+
+function controlClass(error?: string) {
+  return error ? `${fieldClass} ${fieldErrorClass}` : fieldClass;
+}
+
+function visibleFieldError(error: string | undefined, value: string) {
+  if (!error) {
+    return undefined;
+  }
+
+  return value.trim() ? error : "Campo obrigatório";
+}
+
+function focusFirstInvalidField(errors: LeadErrors) {
+  const first = FIELD_ORDER.find((field) => errors[field]);
+
+  if (!first) {
+    return;
+  }
+
+  const element = document.getElementById(fieldId(first));
+
+  if (element instanceof HTMLElement) {
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    element.focus();
+  }
+}
 
 const specialistWhatsAppUrl = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, "")}?text=${encodeURIComponent(
   "Olá! Acabei de enviar uma solicitação de proposta pelo site da ACTUS e gostaria de falar com um especialista.",
@@ -114,6 +165,9 @@ export function ProposalTrigger() {
     if (!result.ok || !result.lead) {
       setErrors(result.errors);
       setStatus("Preencha os campos obrigatórios para continuar.");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => focusFirstInvalidField(result.errors));
+      });
       return;
     }
 
@@ -206,18 +260,21 @@ export function ProposalTrigger() {
           ) : (
           <form className="mt-8 grid gap-5 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
             <Field
+              field="name"
               label="Nome"
               error={errors.name}
               value={lead.name}
               onChange={(value) => updateField("name", value)}
             />
             <Field
+              field="company"
               label="Empresa"
               error={errors.company}
               value={lead.company}
               onChange={(value) => updateField("company", value)}
             />
             <Field
+              field="whatsapp"
               label="WhatsApp"
               error={errors.whatsapp}
               value={lead.whatsapp}
@@ -226,6 +283,7 @@ export function ProposalTrigger() {
               onChange={(value) => updateField("whatsapp", value)}
             />
             <Field
+              field="email"
               label="E-mail"
               error={errors.email}
               value={lead.email}
@@ -234,6 +292,7 @@ export function ProposalTrigger() {
               onChange={(value) => updateField("email", value)}
             />
             <Field
+              field="cityState"
               label="Cidade/UF"
               error={errors.cityState}
               value={lead.cityState}
@@ -245,7 +304,8 @@ export function ProposalTrigger() {
                 Segmento
               </span>
               <select
-                className={fieldClass}
+                id={fieldId("segmentId")}
+                className={controlClass(errors.segmentId)}
                 value={lead.segmentId}
                 aria-invalid={Boolean(errors.segmentId)}
                 onChange={(event) => updateField("segmentId", event.target.value)}
@@ -257,11 +317,14 @@ export function ProposalTrigger() {
                   </option>
                 ))}
               </select>
-              {errors.segmentId ? (
-                <span className="mt-2 block text-xs text-accent">{errors.segmentId}</span>
+              {visibleFieldError(errors.segmentId, lead.segmentId) ? (
+                <span className={fieldMessageClass}>
+                  {visibleFieldError(errors.segmentId, lead.segmentId)}
+                </span>
               ) : null}
             </label>
             <Field
+              field="estimatedTotems"
               label="Quantidade estimada de totens"
               error={errors.estimatedTotems}
               value={lead.estimatedTotems}
@@ -274,7 +337,8 @@ export function ProposalTrigger() {
                 Objetivo principal
               </span>
               <select
-                className={fieldClass}
+                id={fieldId("objective")}
+                className={controlClass(errors.objective)}
                 value={lead.objective}
                 aria-invalid={Boolean(errors.objective)}
                 onChange={(event) => updateField("objective", event.target.value)}
@@ -286,8 +350,34 @@ export function ProposalTrigger() {
                   </option>
                 ))}
               </select>
-              {errors.objective ? (
-                <span className="mt-2 block text-xs text-accent">{errors.objective}</span>
+              {visibleFieldError(errors.objective, lead.objective) ? (
+                <span className={fieldMessageClass}>
+                  {visibleFieldError(errors.objective, lead.objective)}
+                </span>
+              ) : null}
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-xs font-medium tracking-[0.18em] text-accent uppercase">
+                Modelo de interesse
+              </span>
+              <select
+                id={fieldId("modelInterest")}
+                className={controlClass(errors.modelInterest)}
+                value={lead.modelInterest}
+                aria-invalid={Boolean(errors.modelInterest)}
+                onChange={(event) => updateField("modelInterest", event.target.value)}
+              >
+                <option value="">Selecione o modelo</option>
+                {PROPOSAL_MODELS.map((model) => (
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
+                ))}
+              </select>
+              {visibleFieldError(errors.modelInterest, lead.modelInterest) ? (
+                <span className={fieldMessageClass}>
+                  {visibleFieldError(errors.modelInterest, lead.modelInterest)}
+                </span>
               ) : null}
             </label>
             <label className="block sm:col-span-2">
@@ -295,13 +385,16 @@ export function ProposalTrigger() {
                 Descrição da necessidade
               </span>
               <textarea
-                className={`${fieldClass} min-h-28 resize-y`}
+                id={fieldId("description")}
+                className={`${controlClass(errors.description)} min-h-28 resize-y`}
                 value={lead.description}
                 aria-invalid={Boolean(errors.description)}
                 onChange={(event) => updateField("description", event.target.value)}
               />
-              {errors.description ? (
-                <span className="mt-2 block text-xs text-accent">{errors.description}</span>
+              {visibleFieldError(errors.description, lead.description) ? (
+                <span className={fieldMessageClass}>
+                  {visibleFieldError(errors.description, lead.description)}
+                </span>
               ) : null}
             </label>
 
@@ -345,6 +438,7 @@ export function ProposalTrigger() {
 }
 
 type FieldProps = {
+  field: LeadField;
   label: string;
   value: string;
   error?: string;
@@ -356,6 +450,7 @@ type FieldProps = {
 };
 
 function Field({
+  field,
   label,
   value,
   error,
@@ -365,13 +460,16 @@ function Field({
   placeholder,
   onChange,
 }: FieldProps) {
+  const message = visibleFieldError(error, value);
+
   return (
     <label className="block">
       <span className="mb-2 block text-xs font-medium tracking-[0.18em] text-accent uppercase">
         {label}
       </span>
       <input
-        className={fieldClass}
+        id={fieldId(field)}
+        className={controlClass(error)}
         type={type}
         value={value}
         inputMode={inputMode}
@@ -380,7 +478,7 @@ function Field({
         aria-invalid={Boolean(error)}
         onChange={(event) => onChange(event.target.value)}
       />
-      {error ? <span className="mt-2 block text-xs text-accent">{error}</span> : null}
+      {message ? <span className={fieldMessageClass}>{message}</span> : null}
     </label>
   );
 }

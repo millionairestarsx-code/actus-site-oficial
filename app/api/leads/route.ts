@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest } from "next/server";
-import { notifyLeadByEmail } from "@/lib/lead-email";
+import { confirmLeadToCustomer, notifyLeadByEmail } from "@/lib/lead-email";
 import {
   mapLeadToDatabaseRow,
   validateLead,
@@ -129,6 +129,7 @@ export async function POST(request: NextRequest) {
     }
 
     await notifyLeadByEmail(record, data as Record<string, unknown>);
+    await confirmLeadToCustomer(record);
 
     return Response.json({ ok: true, lead: record }, { status: 201 });
   } catch (error) {
